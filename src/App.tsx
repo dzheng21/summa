@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import ImageUpload from "./ImageUpload";
 
 function App() {
   const [data, setData] = useState(null);
@@ -19,6 +20,7 @@ function App() {
         <h1>Call Azure Endpoint</h1>
         <button onClick={callAzureFunction}>Call Azure</button>
         {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+        <ImageUpload />
       </header>
     </div>
   );
