@@ -1,29 +1,15 @@
-import React, { useState } from "react";
-import axios from "axios";
-import ImageUpload from "./ImageUpload";
+import React from "react";
+import HelloWorld from "./components/HelloWorld.tsx"; // Ensure this file exists in the src/components directory
+import ImageUploader from "./components/ImageUploader.tsx"; // Ensure this file exists in the src/components directory
 
-function App() {
-  const [data, setData] = useState(null);
-
-  const callAzureFunction = async () => {
-    try {
-      const response = await axios.get("/api/call_azure");
-      setData(response.data);
-    } catch (error) {
-      console.error("Error calling Azure function:", error);
-    }
-  };
-
+const App: React.FC = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Call Azure Endpoint</h1>
-        <button onClick={callAzureFunction}>Call Azure</button>
-        {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-        <ImageUpload />
-      </header>
+      <h1>Image Upload and Process</h1>
+      <HelloWorld />
+      <ImageUploader />
     </div>
   );
-}
+};
 
 export default App;
