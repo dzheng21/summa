@@ -26,7 +26,7 @@ The extracted information should be returned in the following JSON format:
   "expense_amount": "[Expense Amount]",
   "date": "[Date]",
   "category": "[Category]",
-  "description": "[Description of any excess or contextual information]"
+  "description": "[Description of any extra or contextual information]"
 }
 \`\`\`
 
