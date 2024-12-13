@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 
 export default function Home() {
-  const [uploadedFile, setUploadedFile] = useState<any>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setUploadedFile(acceptedFiles[0]);
@@ -25,10 +25,10 @@ export default function Home() {
           src="/summa.svg"
           alt="summa logo"
           width={200}
-          height={0}
+          height={74}
           priority
         />
-        <h1 className="text-xl font-bold">Welcome to Summa</h1>
+        <h1 className="text-xl">Welcome to Summa</h1>
         <h2 className="text-l">Upload your file below</h2>
         <div
           {...getRootProps()}
