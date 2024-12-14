@@ -3,9 +3,27 @@
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
+import ExpenseTable from "../components/table";
+import { Expense } from "../lib/utils";
 
 export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [expenses, setExpenses] = useState<Expense[]>([
+    {
+      vendor_name: "Vendor 1",
+      expense_amount: 100,
+      date: new Date(),
+      category: "Food",
+      description: "Lunch",
+    },
+    {
+      vendor_name: "Vendor 2",
+      expense_amount: 200,
+      date: new Date(),
+      category: "Travel",
+      description: "Taxi fare",
+    },
+  ]);
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setUploadedFile(acceptedFiles[0]);
@@ -56,6 +74,7 @@ export default function Home() {
             </button>
           </div>
         )}
+        <ExpenseTable expenses={expenses} />
       </main>
     </div>
   );
