@@ -5,6 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export type Expense = {
+  vendor_name?: string;
+  expense_amount?: number;
+  date?: Date;
+  category?: string; // TODO: Can be user-designated or configurable in the future
+  description?: string;
+};
+
 export const expenseExtractionPrompt = `
 Extract key attributes from expense-related screenshots or reports and provide the information in a structured JSON format.
 
