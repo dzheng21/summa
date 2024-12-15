@@ -21,16 +21,19 @@ export default function ExpenseTable({ expenses }: ExpenseTableProps) {
       <TableHeader>
         <TableRow>
           <TableHead>Vendor Name</TableHead>
-          <TableHead>Expense Amount</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>Category</TableHead>
           <TableHead>Description</TableHead>
+          <TableHead>Expense Amount</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {expenses.map((expense, index) => (
           <TableRow key={index}>
             <TableCell className="font-medium">{expense.vendor_name}</TableCell>
+            <TableCell>{expense.date?.toLocaleDateString()}</TableCell>
+            <TableCell>{expense.category}</TableCell>
+            <TableCell>{expense.description}</TableCell>
             <TableCell>
               {expense.expense_amount
                 ? expense.expense_amount.toLocaleString("en-US", {
@@ -39,9 +42,6 @@ export default function ExpenseTable({ expenses }: ExpenseTableProps) {
                   })
                 : "Unknown"}
             </TableCell>
-            <TableCell>{expense.date?.toLocaleDateString()}</TableCell>
-            <TableCell>{expense.category}</TableCell>
-            <TableCell>{expense.description}</TableCell>
           </TableRow>
         ))}
       </TableBody>
