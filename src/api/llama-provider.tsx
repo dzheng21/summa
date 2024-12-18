@@ -39,7 +39,7 @@ export default async function llamaProvider() {
     console.log("Parsed results", JSON.stringify(response.data));
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.log('Error in llamaProvider:', error.message, error.stack);
     return null;
   }
 }
