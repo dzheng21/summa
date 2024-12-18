@@ -4,12 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
+import { uploadDocument } from "@/api/action";
 import { useToast } from "@/hooks/use-toast";
-import axios from "axios";
 
 export function DocumentUploadField() {
   const [file, setFile] = useState<File | null>(null);
-  const [response, setResponse] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
@@ -30,20 +29,17 @@ export function DocumentUploadField() {
 
     setUploading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const result = await axios.post("/api/call_azure", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const result = await uploadDocument(formData);
+
       toast({
         title: "Upload Successful",
         description: `File "${file.name}" has been uploaded.`,
       });
-      setResponse(result.data);
+
       setFile(null);
     } catch (error) {
       console.error("Upload failed:", error);
