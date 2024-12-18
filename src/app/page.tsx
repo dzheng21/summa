@@ -5,10 +5,15 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import ExpenseTable from "../components/table";
 import { Expense } from "../lib/utils";
+import llamaProvider from "@/api/llama-provider";
 
 export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  // TODO: REMOVE THIS WHEN TESTING IS DONE
+  const [llamaResponse, setLlamaResponse] = useState<any>(null);
+  // TODO: REMOVE THIS WHEN TESTING IS DONE
 
   // TODO: this function should be called when the response is received from API
   const updateExpenses = (newExpenses: Expense[]) => {
@@ -106,6 +111,26 @@ export default function Home() {
               </button>
             </div>
           )}
+
+          {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
+          <button
+            onClick={async () => {
+              const response = await llamaProvider();
+              setLlamaResponse(response);
+              console.log("FE Response Received", response);
+            }}
+            className="text-blue-500"
+          >
+            Send Request
+          </button>
+          {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
+
+          {llamaResponse ? (
+            <p> Response: {llamaResponse.choices[0].message.content} </p>
+          ) : (
+            <></>
+          )}
+
           {expenses.length > 0 ? (
             <ExpenseTable expenses={expenses} />
           ) : (
