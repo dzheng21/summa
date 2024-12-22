@@ -21,25 +21,27 @@ const data = JSON.stringify({
   stop: null,
 });
 
-const config = {
-  method: "post",
-  //   maxBodyLength: 800,
-  url: process.env.LLAMA_ENDPOINT || "YOUR_API_ENDPOINT",
-  headers: {
-    "Content-Type": "application/json",
-    "api-key": process.env.LLAMA_API_KEY || "YOUR_API_KEY",
-    "x-ms-model-mesh-model-name": "Llama-3.2-90B-Vision-Instruct",
-  },
-  data: data,
-};
+export default async function llamaProvider(file?: File | undefined) {
+  const formData = new FormData();
+  formData.append("file", file ? file : "");
+  formData.append("data", data);
 
-export default async function llamaProvider() {
+  const config = {
+    method: "post",
+    url: process.env.LLAMA_ENDPOINT || "YOUR_API_ENDPOINT",
+    headers: {
+      "api-key": process.env.LLAMA_API_KEY || "YOUR_API_KEY",
+      "x-ms-model-mesh-model-name": "Llama-3.2-90B-Vision-Instruct",
+    },
+    data: formData,
+  };
+
   try {
     const response = await axios.request(config);
     console.log("Parsed results", JSON.stringify(response.data));
     return response.data;
-  } catch (error) {
-    console.log('Error in llamaProvider:', error.message, error.stack);
+  } catch (error: any) {
+    console.log("Error in llamaProvider:", error.message, error.stack);
     return null;
   }
 }

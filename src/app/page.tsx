@@ -6,13 +6,14 @@ import Image from "next/image";
 import ExpenseTable from "../components/table";
 import { Expense } from "../lib/utils";
 import llamaProvider from "@/api/llama-provider";
+import gpt4oProvider from "@/api/openai-provider";
 
 export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
   // TODO: REMOVE THIS WHEN TESTING IS DONE
-  const [llamaResponse, setLlamaResponse] = useState<any>(null);
+  const [llmResponse, setLlmResponse] = useState<any>(null);
   // TODO: REMOVE THIS WHEN TESTING IS DONE
 
   // TODO: this function should be called when the response is received from API
@@ -115,8 +116,8 @@ export default function Home() {
           {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
           <button
             onClick={async () => {
-              const response = await llamaProvider();
-              setLlamaResponse(response);
+              const response = await gpt4oProvider(uploadedFile ?? undefined);
+              setLlmResponse(response);
               console.log("FE Response Received", response);
             }}
             className="text-blue-500"
@@ -125,8 +126,8 @@ export default function Home() {
           </button>
           {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
 
-          {llamaResponse ? (
-            <p> Response: {llamaResponse.choices[0].message.content} </p>
+          {llmResponse ? (
+            <p> Response: {llmResponse.choices[0].message.content} </p>
           ) : (
             <></>
           )}
