@@ -40,7 +40,7 @@ The extracted information should be returned in the following JSON format:
 
 # Notes
 
-- The "expense_amount" field is particularly important and should be prioritized in extraction. This should be a decimal number representing the amount spent. Do not include the curency symbol, such as $ or €.
+- The "expense_amount" field is particularly important and should be prioritized in extraction. This should be a decimal number representing the amount spent. Do not include the currency symbol, such as $ or €.
 - If any details are ambiguous or unavailable, provide as accurate an estimation or closest guess based on the provided context.
 - Include any additional information outside the specified fields in the "description" to ensure no data is lost.
 `;

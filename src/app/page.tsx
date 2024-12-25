@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="absolute top-2 left-2 w-full">
+      {/* <div className="absolute top-2 left-2 w-full">
         <Image
           className="dark:invert"
           src="/summa.svg"
@@ -61,11 +61,11 @@ export default function Home() {
           height={37}
           priority
         />
-      </div>
+      </div> */}
       <div className="grid grid-rows-[10px_1fr_10px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           <div>
-            <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
+            <h1 className="text-2xl font-semibold">Welcome to summa</h1>
             {expenses.length > 0 ? (
               <></>
             ) : (
