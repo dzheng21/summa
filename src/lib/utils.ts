@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export type Expense = {
   vendor_name?: string;
-  expense_amount?: number;
+  expense_amount?: number; // TODO: This is usually assumed to be USD, but add support for other currencies
   date?: Date;
   category?: string; // TODO: Can be user-designated or configurable in the future
   description?: string;
@@ -40,7 +40,7 @@ The extracted information should be returned in the following JSON format:
 
 # Notes
 
-- The "expense_amount" field is particularly important and should be prioritized in extraction.
+- The "expense_amount" field is particularly important and should be prioritized in extraction. This should be a decimal number representing the amount spent. Do not include the curency symbol, such as $ or €.
 - If any details are ambiguous or unavailable, provide as accurate an estimation or closest guess based on the provided context.
 - Include any additional information outside the specified fields in the "description" to ensure no data is lost.
 `;

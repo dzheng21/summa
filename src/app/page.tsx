@@ -1,98 +1,144 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { DocumentUploadField } from "@/components/document-upload";
-import { Toaster } from "@/components/ui/toaster";
+import Image from "next/image";
+import ExpenseTable from "../components/table";
+import { Expense } from "../lib/utils";
+import llamaProvider from "@/api/llama-provider";
+import gpt4oProvider from "@/api/openai-provider";
 
 export default function Home() {
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  // TODO: REMOVE THIS WHEN TESTING IS DONE
+  const [llmResponse, setLlmResponse] = useState<any>(null);
+  // TODO: REMOVE THIS WHEN TESTING IS DONE
+
+  // TODO: this function should be called when the response is received from API
+  const updateExpenses = (newExpenses: Expense[]) => {
+    setExpenses(newExpenses);
+  };
+
+  const onDrop = useCallback((acceptedFiles: any) => {
+    setUploadedFile(acceptedFiles[0]);
+
+    // TODO: swap out this dummy data with the actual API results
+    updateExpenses([
+      {
+        vendor_name: "Amazon",
+        expense_amount: 100,
+        date: new Date(),
+        category: "Shopping",
+        description: "Bought a new keyboard",
+      },
+      {
+        vendor_name: "Spotify",
+        expense_amount: 10,
+        date: new Date(),
+        category: "Entertainment",
+        description: "Monthly subscription",
+      },
+    ]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  const handleDelete = () => {
+    setUploadedFile(null);
+    setExpenses([]); // TODO: Revisit this behavior
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+    <>
+      <div className="absolute top-2 left-2 w-full">
         <Image
           className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          src="/summa.svg"
+          alt="summa logo"
+          width={100}
+          height={37}
           priority
         />
-        <DocumentUploadField />
-        <Toaster />
-        {/* <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </div>
+      <div className="grid grid-rows-[10px_1fr_10px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+          <div>
+            <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
+            {expenses.length > 0 ? (
+              <></>
+            ) : (
+              <h2 className="text-l text-gray-500">Upload your file below</h2>
+            )}
+          </div>
+          {expenses.length > 0 ? (
+            <></>
+          ) : (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed p-6 rounded-lg h-24 flex items-center text-gray-400 justify-center ${
+                isDragActive
+                  ? "border-blue-400 bg-blue-50 text-blue-400"
+                  : "border-gray-200"
+              } hover:border-blue-400 hover:cursor-pointer hover:text-blue-400 hover:bg-blue-50`}
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p className="text-sm w-80 text-center">
+                  Drop the files here...
+                </p>
+              ) : (
+                <p className="text-sm w-80 text-center">
+                  Drag & drop files here, or click to select files
+                </p>
+              )}
+            </div>
+          )}
+          {uploadedFile && (
+            <div className="flex items-center gap-2 mt-4">
+              <p className="text-sm">
+                <span className="bg-blue-100 text-blue-600 font-semibold p-2 mr-2 rounded">
+                  {uploadedFile.name}
+                </span>
+              </p>
+              <button onClick={handleDelete} className="text-red-500">
+                <Image
+                  src="/trash.svg"
+                  alt="Delete icon"
+                  width={16}
+                  height={16}
+                />
+              </button>
+            </div>
+          )}
+
+          {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
+          <button
+            onClick={async () => {
+              const response = await gpt4oProvider(uploadedFile ?? undefined);
+              setLlmResponse(response);
+              console.log("FE Response Received", response);
+            }}
+            className="text-blue-500"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            About us
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            See the project
-          </a>
-        </div> */}
-      </main>
-      {/* <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer> */}
-    </div>
+            Send Request
+          </button>
+          {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
+
+          {llmResponse ? (
+            <p> Response: {llmResponse.choices[0].message.content} </p>
+          ) : (
+            <></>
+          )}
+
+          {expenses.length > 0 ? (
+            <ExpenseTable expenses={expenses} />
+          ) : (
+            <p className="text-gray-300 text-xs">No expenses to display yet!</p>
+          )}
+        </main>
+      </div>
+    </>
   );
 }
