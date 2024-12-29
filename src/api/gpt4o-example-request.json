@@ -1,0 +1,41 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": [
+        {
+          "type": "text",
+          "text": "Extract key attributes from expense-related screenshots or reports and provide the information in a structured JSON format.\n\nUnderstand that expenses may be derived from various sources like Venmo transactions, credit card transaction images, or SMS notifications. The task is to identify and extract details of each expense transaction, focusing on these key attributes. The expense amount is mandatory and should always be returned if present.\n\n- **Vendor Name**: Identify the name of the vendor or recipient of the transaction.\n- **Expense Amount**: This is a crucial field and should be provided whenever possible.\n- **Date**: Extract the date when the transaction occurred.\n- **Category**: Determine the category of the expense, if mentioned.\n- **Description**: Include any remaining relevant information or notes that do not fit into the other fields.\n\n# Output Format\n\nThe extracted information should be returned in the following JSON format:\n\n```json\n{\n  \"vendor_name\": \"[Vendor Name]\",\n  \"expense_amount\": \"[Expense Amount]\",\n  \"date\": \"[Date]\",\n  \"category\": \"[Category]\",\n  \"description\": \"[Description of any extra or contextual information]\"\n}\n```\n\n# Notes\n\n- The \"expense_amount\" field is particularly important and should be prioritized in extraction. This should be a decimal number representing the amount spent. Do not include the curency symbol, such as $ or €.\n- If any details are ambiguous or unavailable, provide as accurate an estimation or closest guess based on the provided context.\n- Include any additional information outside the specified fields in the \"description\" to ensure no data is lost."
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "image_url",
+          "image_url": {
+            "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgSi8BKc2l99rqzERABERABERABERABERABERABDaSgJTmjQSow0VABERABERABERABERABERABEovgf8DrXte2zJ/ReAAAAAASUVORK5CYII="
+          }
+        },
+        { "type": "text", "text": "\n" }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "```json\n[\n  \n]\n```"
+        }
+      ]
+    }
+  ],
+  "temperature": 0.7,
+  "top_p": 0.95,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "max_tokens": 800,
+  "stop": null,
+  "stream": true
+}
