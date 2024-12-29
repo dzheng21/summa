@@ -118,19 +118,16 @@ export default function Home() {
             onClick={async () => {
               const response = await gpt4oProvider(uploadedFile ?? undefined);
               setLlmResponse(response);
+              setExpenses(response);
               console.log("FE Response Received", response);
             }}
             className="text-blue-500"
           >
             Send Request
           </button>
-          {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
 
-          {llmResponse ? (
-            <p> Response: {llmResponse.choices[0].message.content} </p>
-          ) : (
-            <></>
-          )}
+          {/* TODO: REMOVE THIS WHEN TESTING IS DONE. USE THIS TO DISPLAY JSON AS TEXT */}
+          {/* {llmResponse ? <p> {JSON.stringify(llmResponse)} </p> : <></>} */}
 
           {expenses.length > 0 ? (
             <ExpenseTable expenses={expenses} />
