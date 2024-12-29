@@ -1,5 +1,5 @@
 import axios from "axios";
-import { expenseExtractionPrompt } from "@/lib/utils"; // TODO: UTILIZE THIS PROMPT WHEN NEEDED
+import { expenseExtractionPrompt } from "@/lib/utils";
 
 function parseGpt4oResponse(apiResponse: any) {
   try {
