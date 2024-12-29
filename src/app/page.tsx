@@ -25,22 +25,7 @@ export default function Home() {
     setUploadedFile(acceptedFiles[0]);
 
     // TODO: swap out this dummy data with the actual API results
-    updateExpenses([
-      {
-        vendor_name: "Amazon",
-        expense_amount: 100,
-        date: new Date(),
-        category: "Shopping",
-        description: "Bought a new keyboard",
-      },
-      {
-        vendor_name: "Spotify",
-        expense_amount: 10,
-        date: new Date(),
-        category: "Entertainment",
-        description: "Monthly subscription",
-      },
-    ]);
+    updateExpenses([]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
@@ -114,17 +99,21 @@ export default function Home() {
           )}
 
           {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
-          <button
-            onClick={async () => {
-              const response = await gpt4oProvider(uploadedFile ?? undefined);
-              setLlmResponse(response);
-              setExpenses(response);
-              console.log("FE Response Received", response);
-            }}
-            className="text-blue-500"
-          >
-            Send Request
-          </button>
+          {uploadedFile ? (
+            <></>
+          ) : (
+            <button
+              onClick={async () => {
+                const response = await gpt4oProvider(uploadedFile ?? undefined);
+                setLlmResponse(response);
+                setExpenses(response);
+                console.log("FE Response Received", response);
+              }}
+              className="text-blue-500"
+            >
+              Send Request
+            </button>
+          )}
 
           {/* TODO: REMOVE THIS WHEN TESTING IS DONE. USE THIS TO DISPLAY JSON AS TEXT */}
           {/* {llmResponse ? <p> {JSON.stringify(llmResponse)} </p> : <></>} */}
