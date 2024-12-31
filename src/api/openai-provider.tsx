@@ -66,10 +66,10 @@ export default async function gpt4oProvider(file?: File | undefined) {
   const config = {
     method: "post",
     // maxBodyLength: Infinity,
-    url: process.env.REACT_APP_GPT4O_ENDPOINT || "YOUR_API_URL",
+    url: process.env.GPT4O_ENDPOINT || "YOUR_API_URL",
     headers: {
       "Content-Type": "application/json",
-      "api-key": process.env.REACT_APP_GPT4O_API_KEY || "YOUR_API_KEY",
+      "api-key": process.env.GPT4O_API_KEY || "YOUR_API_KEY",
     },
     data: JSON.stringify(payload),
   };
