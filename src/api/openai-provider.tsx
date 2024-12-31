@@ -11,7 +11,7 @@ function parseGpt4oResponse(apiResponse: ApiResponse) {
     const cleanedContent = content.replace(/```json|```/g, "");
     return JSON.parse(cleanedContent);
   } catch (e) {
-    console.log(e.message);
+    console.log((e as Error).message);
     throw new Error("Failed to parse GPT-4o response");
   }
 }
@@ -66,10 +66,10 @@ export default async function gpt4oProvider(file?: File | undefined) {
   const config = {
     method: "post",
     // maxBodyLength: Infinity,
-    url: "YOUR_API_URL",
+    url: process.env.REACT_APP_GPT4O_ENDPOINT || "YOUR_API_URL",
     headers: {
       "Content-Type": "application/json",
-      "api-key": "YOUR_API_KEY",
+      "api-key": process.env.REACT_APP_GPT4O_API_KEY || "YOUR_API_KEY",
     },
     data: JSON.stringify(payload),
   };

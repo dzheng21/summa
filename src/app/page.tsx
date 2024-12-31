@@ -5,23 +5,19 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import ExpenseTable from "../components/table";
 import { Expense } from "../lib/utils";
-import llamaProvider from "@/api/llama-provider";
+// import llamaProvider from "@/api/llama-provider";
 import gpt4oProvider from "@/api/openai-provider";
 
 export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
-  // TODO: REMOVE THIS WHEN TESTING IS DONE
-  const [llmResponse, setLlmResponse] = useState<any>(null);
-  // TODO: REMOVE THIS WHEN TESTING IS DONE
-
   // TODO: this function should be called when the response is received from API
   const updateExpenses = (newExpenses: Expense[]) => {
     setExpenses(newExpenses);
   };
 
-  const onDrop = useCallback((acceptedFiles: any) => {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
     setUploadedFile(acceptedFiles[0]);
 
     // TODO: swap out this dummy data with the actual API results
@@ -105,7 +101,6 @@ export default function Home() {
             <button
               onClick={async () => {
                 const response = await gpt4oProvider(uploadedFile ?? undefined);
-                setLlmResponse(response);
                 setExpenses(response);
                 console.log("FE Response Received", response);
               }}
@@ -114,9 +109,6 @@ export default function Home() {
               Send Request
             </button>
           )}
-
-          {/* TODO: REMOVE THIS WHEN TESTING IS DONE. USE THIS TO DISPLAY JSON AS TEXT */}
-          {/* {llmResponse ? <p> {JSON.stringify(llmResponse)} </p> : <></>} */}
 
           {expenses && expenses.length > 0 ? (
             <ExpenseTable expenses={expenses} />
