@@ -51,13 +51,13 @@ export default function Home() {
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           <div>
             <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
-            {expenses.length > 0 ? (
+            {expenses && expenses.length > 0 ? (
               <></>
             ) : (
               <h2 className="text-l text-gray-500">Upload your file below</h2>
             )}
           </div>
-          {expenses.length > 0 ? (
+          {expenses && expenses.length > 0 ? (
             <></>
           ) : (
             <div
@@ -99,7 +99,7 @@ export default function Home() {
           )}
 
           {/* TODO: REMOVE THIS WHEN TESTING IS DONE */}
-          {uploadedFile ? (
+          {uploadedFile && !expenses ? (
             <></>
           ) : (
             <button
@@ -118,7 +118,7 @@ export default function Home() {
           {/* TODO: REMOVE THIS WHEN TESTING IS DONE. USE THIS TO DISPLAY JSON AS TEXT */}
           {/* {llmResponse ? <p> {JSON.stringify(llmResponse)} </p> : <></>} */}
 
-          {expenses.length > 0 ? (
+          {expenses && expenses.length > 0 ? (
             <ExpenseTable expenses={expenses} />
           ) : (
             <p className="text-gray-300 text-xs">No expenses to display yet!</p>

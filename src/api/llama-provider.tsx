@@ -1,6 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
-import { expenseExtractionPrompt } from "@/lib/utils"; // TODO: UTILIZE THIS PROMPT WHEN NEEDED
+// import { expenseExtractionPrompt } from "@/lib/utils"; // TODO: UTILIZE THIS PROMPT WHEN NEEDED
 
 dotenv.config();
 
@@ -40,8 +40,12 @@ export default async function llamaProvider(file?: File | undefined) {
     const response = await axios.request(config);
     console.log("Parsed results", JSON.stringify(response.data));
     return response.data;
-  } catch (error: any) {
-    console.log("Error in llamaProvider:", error.message, error.stack);
+  } catch (error: unknown) {
+    console.log(
+      "Error in llamaProvider:",
+      (error as Error).message,
+      (error as Error).stack
+    );
     return null;
   }
 }

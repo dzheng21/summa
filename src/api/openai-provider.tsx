@@ -1,12 +1,17 @@
 import axios from "axios";
 import { expenseExtractionPrompt } from "@/lib/utils";
 
-function parseGpt4oResponse(apiResponse: any) {
+interface ApiResponse {
+  choices?: { message?: { content?: string } }[];
+}
+
+function parseGpt4oResponse(apiResponse: ApiResponse) {
   try {
     const content = apiResponse?.choices?.[0]?.message?.content || "";
     const cleanedContent = content.replace(/```json|```/g, "");
     return JSON.parse(cleanedContent);
   } catch (e) {
+    console.log(e.message);
     throw new Error("Failed to parse GPT-4o response");
   }
 }
@@ -74,26 +79,12 @@ export default async function gpt4oProvider(file?: File | undefined) {
     console.log("Returned result: \n", JSON.stringify(response.data));
     const parsed = parseGpt4oResponse(response.data);
     return parsed;
-  } catch (error: any) {
-    if (error.response) {
-      // Server responded with a status other than 200 range
-      console.log(
-        "Error in gpt4oProvider:",
-        error.response.data,
-        error.response.status,
-        error.response.headers
-      );
-    } else if (error.request) {
-      // Request was made but no response received
-      console.log(
-        "Error in gpt4oProvider: No response received",
-        error.request
-      );
-    } else {
-      // Something happened in setting up the request
-      console.log("Error in gpt4oProvider:", error.message);
-    }
-    console.log("Error config:", error.config);
+  } catch (error) {
+    console.log(
+      "Error in gpt4oProvider:",
+      (error as Error).message,
+      (error as Error).stack
+    );
     return null;
   }
 }
