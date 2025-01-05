@@ -6,9 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export type Expense = {
-  vendor_name?: string;
-  expense_amount?: number; // TODO: This is usually assumed to be USD, but add support for other currencies
-  date?: Date;
+  vendor_name: string;
+  expense_amount: number; // TODO: This is usually assumed to be USD, but add support for other currencies
+  date: Date;
   category?: string; // TODO: Can be user-designated or configurable in the future
   description?: string;
 };

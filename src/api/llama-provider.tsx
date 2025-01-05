@@ -1,8 +1,7 @@
-import axios from "axios";
-import dotenv from "dotenv";
-// import { expenseExtractionPrompt } from "@/lib/utils"; // TODO: UTILIZE THIS PROMPT WHEN NEEDED
+"use server";
 
-dotenv.config();
+import axios from "axios";
+// import { expenseExtractionPrompt } from "@/lib/utils"; // TODO: UTILIZE THIS PROMPT WHEN NEEDED
 
 const data = JSON.stringify({
   messages: [

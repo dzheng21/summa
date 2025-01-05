@@ -1,3 +1,5 @@
+"use server";
+
 import axios from "axios";
 import { expenseExtractionPrompt } from "@/lib/utils";
 
@@ -16,19 +18,7 @@ function parseGpt4oResponse(apiResponse: ApiResponse) {
   }
 }
 
-export default async function gpt4oProvider(file?: File | undefined) {
-  let base64File = "";
-
-  if (file) {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      base64File = reader.result?.toString().split(",")[1] || "";
-    };
-    await new Promise((resolve) => (reader.onloadend = resolve));
-    console.log("This is the file that is received", base64File);
-  }
-
+export default async function gpt4oProvider(base64File: string) {
   const payload = {
     messages: [
       {

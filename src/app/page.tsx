@@ -100,7 +100,9 @@ export default function Home() {
           ) : (
             <button
               onClick={async () => {
-                const response = await gpt4oProvider(uploadedFile ?? undefined);
+                const response = await callGpt4oProvider(
+                  uploadedFile ?? undefined
+                );
                 setExpenses(response);
                 console.log("FE Response Received", response);
               }}
@@ -118,5 +120,51 @@ export default function Home() {
         </main>
       </div>
     </>
+  );
+}
+
+async function callGpt4oProvider(file: File | undefined): Promise<Expense[]> {
+  if (!file) {
+    return [];
+  }
+
+  let base64File = "";
+
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => {
+    base64File = reader.result?.toString().split(",")[1] || "";
+  };
+
+  await new Promise((resolve) => (reader.onloadend = resolve));
+
+  console.log("This is the file that is received", base64File);
+
+  try {
+    const response = await gpt4oProvider(base64File);
+
+    if (
+      !Array.isArray(response) ||
+      !response.every((expense) => isExpense(expense))
+    ) {
+      throw new Error("Invalid response format");
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error calling gpt4oProvider:", error);
+    return [];
+  }
+}
+
+function isExpense(expense: unknown): expense is Expense {
+  // TODO: Implement a more robust type guard, try catch if necessary
+
+  return (
+    typeof expense === "object" &&
+    expense !== null &&
+    "vendor_name" in expense &&
+    "expense_amount" in expense &&
+    "date" in expense
   );
 }
