@@ -123,9 +123,7 @@ export default function Home() {
   );
 }
 
-async function callGpt4oProvider(
-  file: File | undefined
-): Promise<Expense[] | string> {
+async function callGpt4oProvider(file: File | undefined): Promise<Expense[]> {
   if (!file) {
     return [];
   }
