@@ -159,8 +159,14 @@ async function callGpt4oProvider(
   }
 }
 
-function isExpense(expense: any): expense is Expense {
+function isExpense(expense: unknown): expense is Expense {
+  // TODO: Implement a more robust type guard, try catch if necessary
+
   return (
-    expense && expense.vendor_name && expense.expense_amount && expense.date
+    typeof expense === "object" &&
+    expense !== null &&
+    "vendor_name" in expense &&
+    "expense_amount" in expense &&
+    "date" in expense
   );
 }
