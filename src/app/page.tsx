@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import ExpenseTable from "../components/table";
@@ -13,24 +13,45 @@ export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // TODO: this function should be called when the response is received from API
-  const updateExpenses = (newExpenses: Expense[]) => {
-    setExpenses(newExpenses);
-  };
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setUploadedFile(acceptedFiles[0]);
+    const file = acceptedFiles[0];
+    setUploadedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
 
-    // TODO: swap out this dummy data with the actual API results
-    updateExpenses([]);
+    // Automatically process the file
+    processFile(file);
   }, []);
+
+  // New function to handle file processing
+  const processFile = async (file: File) => {
+    setIsLoading(true);
+    try {
+      const response = await callGpt4oProvider(file);
+      setExpenses(response);
+      console.log("FE Response Received", response);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Cleanup preview URL when component unmounts or file changes
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleDelete = () => {
     setUploadedFile(null);
-    setExpenses([]); // TODO: Revisit this behavior
+    setPreviewUrl(null);
+    setExpenses([]);
   };
 
   return (
@@ -47,21 +68,21 @@ export default function Home() {
             priority
           />
         </div>
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
-          {!expenses?.length && (
+        {!uploadedFile && !expenses.length && (
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
             <h2 className="text-l text-gray-500">Upload your file below</h2>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Content area */}
       <div className="px-8 sm:px-20">
         <div className="flex flex-col gap-6">
-          {!expenses?.length && (
+          {!uploadedFile && (
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed p-6 rounded-lg h-24 flex items-center text-gray-400 justify-center ${
+              className={`border-2 border-dashed p-6 rounded-lg h-24 flex items-center text-gray-400 justify-center max-w-[80%] mx-auto w-full ${
                 isDragActive
                   ? "border-blue-400 bg-blue-50 text-blue-400"
                   : "border-gray-200"
@@ -80,40 +101,74 @@ export default function Home() {
             </div>
           )}
 
-          {uploadedFile && (
-            <div className="flex items-center gap-2">
-              <p className="text-sm">
-                <span className="bg-blue-100 text-blue-600 font-semibold p-2 mr-2 rounded">
-                  {uploadedFile.name}
-                </span>
-              </p>
-              <button onClick={handleDelete} className="text-red-500">
+          {uploadedFile && previewUrl && (
+            <div className="flex flex-col items-center gap-4">
+              <button
+                onClick={() => setIsPreviewOpen(true)}
+                className="relative w-[10%] aspect-auto overflow-hidden rounded-lg hover:opacity-90 transition-opacity"
+              >
                 <Image
-                  src="/trash.svg"
-                  alt="Delete icon"
-                  width={16}
-                  height={16}
+                  src={previewUrl}
+                  alt="Receipt preview"
+                  width={100}
+                  height={100}
+                  className="object-contain w-full h-full"
                 />
               </button>
+              <div className="flex items-center gap-2">
+                <p className="text-sm">
+                  <span className="bg-blue-100 text-blue-600 font-semibold p-2 mr-2 rounded">
+                    {uploadedFile.name}
+                  </span>
+                </p>
+                <button onClick={handleDelete} className="text-red-500">
+                  <Image
+                    src="/trash.svg"
+                    alt="Delete icon"
+                    width={16}
+                    height={16}
+                  />
+                </button>
+              </div>
             </div>
           )}
 
-          {uploadedFile && !isLoading && !expenses.length && (
-            <button
-              onClick={async () => {
-                setIsLoading(true);
-                try {
-                  const response = await callGpt4oProvider(uploadedFile);
-                  setExpenses(response);
-                  console.log("FE Response Received", response);
-                } finally {
-                  setIsLoading(false);
-                }
-              }}
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 w-fit"
-            >
-              Send Request
-            </button>
+          {/* Image Preview Modal */}
+          {isPreviewOpen && previewUrl && (
+            <>
+              {/* Backdrop - clicking anywhere on it closes the modal */}
+              <div
+                className="fixed inset-0 bg-black/50 z-40"
+                onClick={() => setIsPreviewOpen(false)}
+              />
+              {/* Modal content */}
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                onClick={(e) => {
+                  // Close if clicking the outer container, but not the image
+                  if (e.target === e.currentTarget) {
+                    setIsPreviewOpen(false);
+                  }
+                }}
+              >
+                <div className="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setIsPreviewOpen(false)}
+                    className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                    aria-label="Close preview"
+                  >
+                    <span className="text-xl font-semibold">×</span>
+                  </button>
+                  <Image
+                    src={previewUrl}
+                    alt="Receipt preview"
+                    width={800}
+                    height={800}
+                    className="object-contain w-full h-full"
+                  />
+                </div>
+              </div>
+            </>
           )}
 
           {isLoading && (
@@ -125,7 +180,7 @@ export default function Home() {
 
           {expenses?.length > 0 && <ExpenseTable expenses={expenses} />}
 
-          {!isLoading && !expenses?.length && (
+          {!isLoading && !expenses?.length && !uploadedFile && (
             <p className="text-gray-300 text-xs">No expenses to display yet!</p>
           )}
         </div>
