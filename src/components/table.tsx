@@ -19,7 +19,26 @@ export default function ExpenseTable({ expenses }: ExpenseTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <CopyButton text={JSON.stringify(expenses, null, 2)} />
+        <CopyButton
+          text={expenses
+            .map((expense) =>
+              [
+                expense.vendor_name,
+                expense.date
+                  ? new Date(expense.date).toLocaleDateString()
+                  : "Invalid Date",
+                expense.category,
+                expense.description,
+                expense.expense_amount
+                  ? expense.expense_amount.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })
+                  : "Unknown",
+              ].join("\t")
+            )
+            .join("\n")}
+        />
       </div>
       <Table>
         <TableCaption>your extracted expenses!</TableCaption>
