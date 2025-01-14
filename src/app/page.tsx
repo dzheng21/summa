@@ -57,7 +57,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Fixed header area */}
-      <div className="w-full px-8 pt-8 sm:px-20">
+      <div className="w-full pt-8 sm:px-20">
         <div className="mb-4">
           <Image
             className="dark:invert"
@@ -68,21 +68,22 @@ export default function Home() {
             priority
           />
         </div>
-        {!uploadedFile && !expenses.length && (
-          <div className="mb-8">
-            <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
-            <h2 className="text-l text-gray-500">Upload your file below</h2>
-          </div>
-        )}
       </div>
 
       {/* Content area */}
-      <div className="px-8 sm:px-20">
+      <div className="w-2/3 px-8 sm:px-20 mx-auto">
         <div className="flex flex-col gap-6">
+          {!uploadedFile && !expenses.length && (
+            <div className="mt-20 mb-2">
+              <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
+              <h2 className="text-l text-gray-500">Upload your file below</h2>
+            </div>
+          )}
+
           {!uploadedFile && (
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed p-6 rounded-lg h-24 flex items-center text-gray-400 justify-center max-w-[80%] mx-auto w-full ${
+              className={`border-2 border-dashed p-3 rounded-lg h-36 flex items-center text-gray-400 justify-center mx-auto w-full ${
                 isDragActive
                   ? "border-blue-400 bg-blue-50 text-blue-400"
                   : "border-gray-200"
