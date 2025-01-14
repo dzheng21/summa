@@ -4,22 +4,43 @@ import { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import ExpenseTable from "../components/table";
-import { Expense } from "../lib/utils";
+import { Expense, Receipt, ViewMode } from "../lib/utils";
 // import llamaProvider from "@/api/llama-provider";
 import gpt4oProvider from "@/api/openai-provider";
 import { HelpGuide } from "../components/HelpGuide";
+import { ViewModeToggle } from "@/components/ViewModeToggle";
+import ReceiptView from "@/components/ReceiptView";
+
+// Add response type
+interface ApiSuccessResponse {
+  success: true;
+  data: Expense[] | Receipt;
+}
+
+interface ApiErrorResponse {
+  success: false;
+  error: string;
+}
+
+type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 
 export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [receipt, setReceipt] = useState<Receipt | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("expense");
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     setUploadedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
+    setError(null);
+    setExpenses([]);
+    setReceipt(null);
 
     // Automatically process the file
     processFile(file);
@@ -28,13 +49,62 @@ export default function Home() {
   // New function to handle file processing
   const processFile = async (file: File) => {
     setIsLoading(true);
+    setError(null);
     try {
-      const response = await callGpt4oProvider(file);
-      setExpenses(response);
-      console.log("FE Response Received", response);
+      const response = await callGpt4oProvider(file, viewMode);
+      console.log("Process File Response:", response);
+
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      if (viewMode === "expense") {
+        if (!Array.isArray(response.data)) {
+          throw new Error("Expected array of expenses");
+        }
+        setExpenses(response.data as Expense[]);
+        setReceipt(null);
+      } else {
+        if (Array.isArray(response.data)) {
+          throw new Error("Expected receipt object");
+        }
+        setReceipt(response.data as Receipt);
+        setExpenses([]);
+      }
+      console.log("State Updated:", {
+        viewMode,
+        expenses: viewMode === "expense" ? response.data : [],
+        receipt: viewMode === "receipt" ? response.data : null,
+      });
+    } catch (err) {
+      console.error("Process File Error:", err);
+      setError((err as Error).message || "Failed to process receipt");
+      setExpenses([]);
+      setReceipt(null);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    if (uploadedFile) {
+      processFile(uploadedFile);
+    }
+  };
+
+  const handleModeChange = (newMode: ViewMode) => {
+    setViewMode(newMode);
+    if (uploadedFile) {
+      processFile(uploadedFile);
+    }
+  };
+
+  const handleDelete = () => {
+    setUploadedFile(null);
+    setPreviewUrl(null);
+    setExpenses([]);
+    setReceipt(null);
+    setError(null);
   };
 
   // Cleanup preview URL when component unmounts or file changes
@@ -48,17 +118,11 @@ export default function Home() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const handleDelete = () => {
-    setUploadedFile(null);
-    setPreviewUrl(null);
-    setExpenses([]);
-  };
-
   return (
     <div className="min-h-screen">
       {/* Fixed header area */}
-      <div className="w-full pt-8 sm:px-20">
-        <div className="mb-4">
+      <div className="w-full px-8 pt-8 sm:px-20">
+        <div className="mb-4 flex justify-between items-center max-w-[60%] mx-auto">
           <Image
             className="dark:invert"
             src="/summa.svg"
@@ -67,23 +131,44 @@ export default function Home() {
             height={37}
             priority
           />
+          <div className="absolute top-8 right-8">
+            <HelpGuide />
+          </div>
         </div>
+        {!uploadedFile && !expenses.length && !receipt && (
+          <div className="mb-8 max-w-[60%] mx-auto">
+            <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
+            <h2 className="text-l text-gray-500">Upload your file below</h2>
+          </div>
+        )}
+      </div>
+
+      {/* Mode Toggle centered */}
+      <div className="w-full flex justify-center mb-6">
+        <ViewModeToggle mode={viewMode} onChange={handleModeChange} />
       </div>
 
       {/* Content area */}
-      <div className="w-2/3 px-8 sm:px-20 mx-auto">
-        <div className="flex flex-col gap-6">
-          {!uploadedFile && !expenses.length && (
-            <div className="mt-20 mb-2">
-              <h1 className="text-2xl font-semibold">Welcome to Summa</h1>
-              <h2 className="text-l text-gray-500">Upload your file below</h2>
+      <div className="px-8 sm:px-20">
+        <div className="flex flex-col gap-6 max-w-[60%] mx-auto">
+          {uploadedFile && (
+            <div className="flex justify-end">
+              <div className="flex items-center gap-4">
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                <button
+                  onClick={handleRetry}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Try Again
+                </button>
+              </div>
             </div>
           )}
 
           {!uploadedFile && (
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed p-3 rounded-lg h-36 flex items-center text-gray-400 justify-center mx-auto w-full ${
+              className={`border-2 border-dashed p-6 rounded-lg h-24 flex items-center text-gray-400 justify-center w-full ${
                 isDragActive
                   ? "border-blue-400 bg-blue-50 text-blue-400"
                   : "border-gray-200"
@@ -179,25 +264,33 @@ export default function Home() {
             </div>
           )}
 
-          {expenses?.length > 0 && <ExpenseTable expenses={expenses} />}
-
-          {!isLoading && !expenses?.length && !uploadedFile && (
-            <p className="text-gray-300 text-xs">No expenses to display yet!</p>
+          {viewMode === "expense" && expenses?.length > 0 && (
+            <ExpenseTable expenses={expenses} />
           )}
-        </div>
-      </div>
 
-      {/* Help Guide positioned absolutely */}
-      <div className="absolute top-8 right-8">
-        <HelpGuide />
+          {viewMode === "receipt" && receipt && receipt.items && (
+            <ReceiptView receipt={receipt} />
+          )}
+
+          {!isLoading &&
+            !expenses?.length &&
+            !receipt?.items &&
+            !uploadedFile &&
+            !error && (
+              <p className="text-gray-300 text-xs">No data to display yet!</p>
+            )}
+        </div>
       </div>
     </div>
   );
 }
 
-async function callGpt4oProvider(file: File | undefined): Promise<Expense[]> {
+async function callGpt4oProvider(
+  file: File | undefined,
+  mode: ViewMode
+): Promise<ApiResponse> {
   if (!file) {
-    return [];
+    return { success: false, error: "No file provided" };
   }
 
   let base64File = "";
@@ -210,22 +303,13 @@ async function callGpt4oProvider(file: File | undefined): Promise<Expense[]> {
 
   await new Promise((resolve) => (reader.onloadend = resolve));
 
-  console.log("This is the file that is received", base64File);
-
   try {
-    const response = await gpt4oProvider(base64File);
-
-    if (
-      !Array.isArray(response) ||
-      !response.every((expense) => isExpense(expense))
-    ) {
-      throw new Error("Invalid response format");
-    }
-
+    const response = await gpt4oProvider(base64File, mode);
+    console.log("GPT4O Response:", response);
     return response;
   } catch (error) {
     console.error("Error calling gpt4oProvider:", error);
-    return [];
+    return { success: false, error: "Failed to process receipt" };
   }
 }
 

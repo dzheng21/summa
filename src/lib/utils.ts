@@ -7,10 +7,29 @@ export function cn(...inputs: ClassValue[]) {
 
 export type Expense = {
   vendor_name: string;
-  expense_amount: number; // TODO: This is usually assumed to be USD, but add support for other currencies
-  date: Date;
-  category?: string; // TODO: Can be user-designated or configurable in the future
+  date: string;
+  category?: string;
   description?: string;
+  expense_amount: number;
+};
+
+export type ReceiptItem = {
+  item_name: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  tags?: string[];
+  split_with?: string[];
+};
+
+export type Receipt = {
+  vendor_name: string;
+  date: string;
+  items: ReceiptItem[];
+  subtotal: number;
+  tax?: number;
+  tip?: number;
+  total: number;
 };
 
 export const expenseExtractionPrompt = `
@@ -44,3 +63,58 @@ The extracted information should be returned in the following JSON format:
 - If any details are ambiguous or unavailable, provide as accurate an estimation or closest guess based on the provided context.
 - Include any additional information outside the specified fields in the "description" to ensure no data is lost.
 `;
+
+export type ViewMode = "expense" | "receipt";
+
+// export const expenseExtractionPrompt = `You are a receipt analyzer. Extract the following information from the receipt image:
+// - Vendor name
+// - Date
+// - Category (if applicable)
+// - Description (if applicable)
+// - Total expense amount
+
+// Return the data in the following JSON format:
+// {
+//   "vendor_name": "string",
+//   "date": "YYYY-MM-DD",
+//   "category": "string",
+//   "description": "string",
+//   "expense_amount": number
+// }`;
+
+export const receiptExtractionPrompt = `You are a detailed receipt analyzer. Extract the following information from the receipt image:
+- Vendor name
+- Date
+- Individual items with:
+  - Item name
+  - Quantity
+  - Unit price
+  - Total price for the item
+- Subtotal
+- Tax (if present)
+- Tip (if present)
+- Total amount
+
+Return the data in the following JSON format:
+{
+  "vendor_name": "string",
+  "date": "YYYY-MM-DD",
+  "items": [
+    {
+      "item_name": "string",
+      "quantity": number,
+      "unit_price": number,
+      "total_price": number,
+      "tags": ["string"],
+      "split_with": ["string"]
+    }
+  ],
+  "subtotal": number,
+  "tax": number,
+  "tip": number,
+  "total": number
+}`;
+
+export function getPromptForMode(mode: ViewMode): string {
+  return mode === "expense" ? expenseExtractionPrompt : receiptExtractionPrompt;
+}

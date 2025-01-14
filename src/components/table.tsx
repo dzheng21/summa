@@ -13,9 +13,33 @@ import { CopyButton } from "./CopyButton";
 
 interface ExpenseTableProps {
   expenses: Expense[];
+  error?: string;
+  onRetry?: () => void;
 }
 
-export default function ExpenseTable({ expenses }: ExpenseTableProps) {
+export default function ExpenseTable({
+  expenses,
+  error,
+  onRetry,
+}: ExpenseTableProps) {
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <div className="flex flex-col items-center gap-4 p-8 text-center">
+          <p className="text-red-500">{error}</p>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Try Again
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
