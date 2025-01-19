@@ -20,7 +20,7 @@ function parseGpt4oResponse(apiResponse: ApiResponse) {
 
 export default async function gpt4oProvider(
   base64File: string,
-  mode: ViewMode = "expense"
+  mode: ViewMode
 ) {
   const payload = {
     messages: [
@@ -66,15 +66,10 @@ export default async function gpt4oProvider(
 
   try {
     const response = await axios.request(config);
-    console.log("Returned result: \n", JSON.stringify(response.data));
     const parsed = parseGpt4oResponse(response.data);
     return { success: true, data: parsed };
   } catch (error) {
-    console.log(
-      "Error in gpt4oProvider:",
-      (error as Error).message,
-      (error as Error).stack
-    );
+    console.error("Error in gpt4oProvider:", error);
     return {
       success: false,
       error: (error as Error).message || "Failed to process receipt",
