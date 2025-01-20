@@ -2,7 +2,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -65,8 +64,8 @@ export default function ExpenseTable({
             .join("\n")}
         />
       </div>
-      <Table>
-        <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto">
+        <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
@@ -119,18 +118,18 @@ export default function ExpenseTable({
               </TableCell>
             </TableRow>
           </TableFooter>
-        </div>
-      </Table>
+        </Table>
+      </div>
 
-      <div className="flex justify-center mt-6">
+      <div className="flex flex-col items-center mt-6 space-y-2">
+        <p className="text-gray-500 text-sm">
+          Doesn&apos;t seem right? AI can be prone to mistakes.{" "}
+        </p>
         <button
           onClick={onRetry}
           className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-2 px-4 py-2 rounded-md border border-gray-200 hover:bg-gray-50 transition-colors"
         >
-          <span>
-            doesn&apos;t seem right? AI can be prone to mistakes. Click to run
-            again
-          </span>
+          <span>Click here to run again</span>
         </button>
       </div>
     </div>

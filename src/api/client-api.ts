@@ -20,9 +20,27 @@ export async function analyzeImage(
   signal: AbortSignal
 ): Promise<ApiResponse> {
   try {
+    // Check if the signal is already aborted
+    if (signal.aborted) {
+      return {
+        success: false,
+        error: "Request aborted",
+      };
+    }
+
     const response = await gpt4oProvider(base64File, mode);
+    if (response.success) {
+      return {
+        success: true,
+        data: response.data,
+      };
+    } else {
+      return {
+        success: false,
+        error: "Failed to process receipt",
+      };
+    }
     // Same shape as ApiResponse
-    return response;
   } catch (error) {
     return {
       success: false,
