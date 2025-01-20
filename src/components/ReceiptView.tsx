@@ -110,9 +110,9 @@ Total: ${formatCurrency(receipt.totals.total)}`;
         <CopyButton text={generateCopyText()} />
       </div>
 
-      <Table>
-        <TableCaption>Receipt Details</TableCaption>
-        <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto">
+        <Table>
+          <TableCaption>Receipt Details</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Item</TableHead>
@@ -182,8 +182,8 @@ Total: ${formatCurrency(receipt.totals.total)}`;
               </TableCell>
             </TableRow>
           </TableFooter>
-        </div>
-      </Table>
+        </Table>
+      </div>
 
       <div className="flex justify-center mt-6">
         <button

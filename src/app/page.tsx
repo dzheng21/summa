@@ -107,11 +107,6 @@ export default function Home() {
       }
 
       if (mode === "expense") {
-        // if (!response.data || !Array.isArray(response.data)) {
-        //   throw new Error(
-        //     "Invalid response format for expenses - expected an array"
-        //   );
-        // }
         setExpenses(response.data);
         setReceipt(null);
       } else {
@@ -124,7 +119,8 @@ export default function Home() {
             "Invalid response format for receipt - expected an object"
           );
         }
-        setReceipt(response.data.data);
+        console.log("Receipt data:", response.data);
+        setReceipt(response.data);
         setExpenses([]);
       }
     } catch (err) {

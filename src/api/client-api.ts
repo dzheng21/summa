@@ -1,4 +1,5 @@
 import { ViewMode } from "@/lib/utils";
+import gpt4oProvider from "@/api/openai-provider";
 
 export interface ApiSuccessResponse {
   success: true;
@@ -19,31 +20,13 @@ export async function analyzeImage(
   signal: AbortSignal
 ): Promise<ApiResponse> {
   try {
-    const response = await fetch("/api/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        image: base64File,
-        mode,
-      }),
-      signal,
-    });
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const data = await response.json();
-    return { success: true, data };
+    const response = await gpt4oProvider(base64File, mode);
+    // Same shape as ApiResponse
+    return response;
   } catch (error) {
-    if ((error as Error).name === "AbortError") {
-      throw error;
-    }
     return {
       success: false,
-      error: (error as Error).message || "Failed to analyze image",
+      error: String(error),
     };
   }
 }
