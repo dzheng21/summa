@@ -237,7 +237,7 @@ export default function Home() {
 
           {/* Results */}
           {!isLoading && viewMode === "expense" && expenses?.length > 0 && (
-            <ExpenseTable expenses={expenses} />
+            <ExpenseTable expenses={expenses} onRetry={handleRetry} />
           )}
 
           {!isLoading && viewMode === "receipt" && receipt && (
