@@ -1,7 +1,7 @@
 "use server";
 
 import axios from "axios";
-import { expenseExtractionPrompt } from "@/lib/utils";
+import { ViewMode, getPromptForMode } from "@/lib/utils";
 
 interface ApiResponse {
   choices?: { message?: { content?: string } }[];
@@ -18,7 +18,10 @@ function parseGpt4oResponse(apiResponse: ApiResponse) {
   }
 }
 
-export default async function gpt4oProvider(base64File: string) {
+export default async function gpt4oProvider(
+  base64File: string,
+  mode: ViewMode
+) {
   const payload = {
     messages: [
       {
@@ -26,8 +29,7 @@ export default async function gpt4oProvider(base64File: string) {
         content: [
           {
             type: "text",
-            // text: "This is a test prompt, please respond with 'Hello!'",
-            text: expenseExtractionPrompt, // Utilize the expenseExtractionPrompt
+            text: getPromptForMode(mode),
           },
         ],
       },
@@ -37,8 +39,7 @@ export default async function gpt4oProvider(base64File: string) {
           {
             type: "image_url",
             image_url: {
-              // TODO: ASSUMES PNG, EXPAND TO OTHER FILES after testing
-              url: `data:image/png;base64,${base64File}`, // Include the base64 encoded file in the message
+              url: `data:image/png;base64,${base64File}`,
             },
           },
         ],
@@ -55,7 +56,6 @@ export default async function gpt4oProvider(base64File: string) {
 
   const config = {
     method: "post",
-    // maxBodyLength: Infinity,
     url: process.env.GPT4O_ENDPOINT || "YOUR_API_URL",
     headers: {
       "Content-Type": "application/json",
@@ -66,15 +66,13 @@ export default async function gpt4oProvider(base64File: string) {
 
   try {
     const response = await axios.request(config);
-    console.log("Returned result: \n", JSON.stringify(response.data));
     const parsed = parseGpt4oResponse(response.data);
-    return parsed;
+    return { success: true, data: parsed };
   } catch (error) {
-    console.log(
-      "Error in gpt4oProvider:",
-      (error as Error).message,
-      (error as Error).stack
-    );
-    return null;
+    console.error("Error in gpt4oProvider:", error);
+    return {
+      success: false,
+      error: (error as Error).message || "Failed to process receipt",
+    };
   }
 }
