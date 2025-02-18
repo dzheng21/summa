@@ -1,7 +1,12 @@
 "use server";
 
 import axios from "axios";
-import { ViewMode, getPromptForMode } from "@/lib/utils";
+import {
+  ReceiptItem,
+  VendorInfo,
+  ViewMode,
+  getPromptForMode,
+} from "@/lib/utils";
 
 interface ApiResponse {
   choices?: { message?: { content?: string } }[];
@@ -104,7 +109,8 @@ function parseReceiptGpt4oResponse(apiResponse: ApiResponse) {
       }
     } catch (parseError) {
       console.log(
-        "Failed to parse complete JSON, attempting to handle truncation"
+        "Failed to parse complete JSON, attempting to handle truncation",
+        parseError
       );
     }
 
@@ -115,14 +121,17 @@ function parseReceiptGpt4oResponse(apiResponse: ApiResponse) {
       /"line_items"\s*:\s*\[(.*?)(?:\]|$)/s
     );
 
-    const partialResult: any = {};
+    const partialResult: {
+      vendor_info?: VendorInfo;
+      line_items?: ReceiptItem[];
+    } = {};
 
     // Extract vendor info if available
     if (vendorMatch) {
       try {
         partialResult.vendor_info = JSON.parse(vendorMatch[1]);
       } catch (e) {
-        console.log("Failed to parse vendor_info");
+        console.log("Failed to parse vendor_info", e);
       }
     }
 

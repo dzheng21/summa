@@ -20,8 +20,8 @@ export type Expense = {
 
 export type ReceiptItem = {
   item_name: string;
-  quantity: number;
-  unit_price: number;
+  quantity?: number;
+  unit_price?: number;
   subtotal: number;
   notes?: string;
 };
@@ -31,13 +31,15 @@ export type AdditionalCharge = {
   amount: number;
 };
 
+export type VendorInfo = {
+  name: string;
+  location?: string;
+  date: string;
+  time?: string;
+};
+
 export type Receipt = {
-  vendor_info: {
-    name: string;
-    location?: string;
-    date: string;
-    time?: string;
-  };
+  vendor_info: VendorInfo;
   line_items: ReceiptItem[];
   additional_charges: AdditionalCharge[];
   totals: {

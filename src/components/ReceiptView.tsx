@@ -77,7 +77,7 @@ export default function ReceiptView({
       .map(
         (item) =>
           `${item.item_name}\t${item.quantity}x\t${formatCurrency(
-            item.unit_price
+            item.unit_price ?? 0
           )}\t${formatCurrency(item.subtotal)}`
       )
       .join("\n");
@@ -132,7 +132,7 @@ Total: ${formatCurrency(receipt.totals.total)}`;
                 </TableCell>
                 <TableCell className="text-right">{item.quantity}</TableCell>
                 <TableCell className="text-right">
-                  {formatCurrency(item.unit_price)}
+                  {formatCurrency(item.unit_price ?? 0)}
                 </TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(item.subtotal)}
