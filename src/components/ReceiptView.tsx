@@ -83,7 +83,7 @@ export default function ReceiptView({
       .join("\n");
 
     return `${receipt.vendor_info.name}
-${receipt.vendor_info.date}
+${receipt.vendor_info.date ? receipt.vendor_info.date : ""}
 
 Items:
 ${items}
